@@ -1,0 +1,169 @@
+/* ═══════════════════════════════════════════════════════════
+   QazaqBioHub — Dashboard Additional Styles
+═══════════════════════════════════════════════════════════ */
+
+/* ── TOPBAR TICKER ── */
+.dash-topbar-ticker {
+  flex: 1; overflow: hidden; min-width: 0;
+  max-width: 600px; height: 100%;
+  display: flex; align-items: center;
+  padding: 0 16px;
+  border-left: 1px solid var(--slate-200);
+  border-right: 1px solid var(--slate-200);
+  margin: 0 12px;
+}
+.nb-ticker-inner {
+  display: flex; gap: 0; white-space: nowrap;
+  animation: tickerScroll 40s linear infinite;
+}
+.nb-ticker-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 16px;
+  border-right: 1px solid var(--slate-200);
+}
+.nb-ticker-name { font-size: 0.75rem; font-weight: 700; color: var(--slate-700); }
+.nb-ticker-price { font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--slate-900); }
+.nb-ticker-ch { font-size: 0.72rem; font-weight: 600; }
+.nb-ticker-up { color: var(--green); }
+.nb-ticker-dn { color: var(--red); }
+
+/* ── SIDEBAR AI STATUS ── */
+.sidebar-ai-status {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: var(--blue-pale);
+  border: 1px solid rgba(37,99,235,0.15);
+  border-radius: var(--radius);
+}
+.sas-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--green); flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+.sas-title { font-size: 0.83rem; font-weight: 700; color: var(--blue); }
+.sas-sub { font-size: 0.72rem; color: var(--slate-500); margin-top: 1px; }
+
+/* ── CHART LEGEND ── */
+.chart-legend {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.78rem; color: var(--slate-600);
+}
+.cl-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* ── COMMODITY TABLE ENHANCEMENTS ── */
+.ct-bar { transition: width 1s ease; }
+.price-flash {
+  animation: priceFlash 0.5s ease;
+}
+@keyframes priceFlash {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(16,185,129,0.1); }
+}
+.ct-rec-badge {
+  display: inline-block; padding: 2px 8px;
+  border-radius: 99px; font-size: 0.7rem; font-weight: 700;
+}
+.ct-rec-a { background: #d1fae5; color: #065f46; }
+.ct-rec-b { background: #fef3c7; color: #92400e; }
+.ct-rec-c { background: #ede9fe; color: #5b21b6; }
+.ct-rec-none { background: var(--slate-100); color: var(--slate-500); }
+
+/* ── MINI SPARKLINE ── */
+.sparkline { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
+.sparkline-bar {
+  width: 4px; border-radius: 2px 2px 0 0;
+  transition: height 0.5s ease;
+}
+
+/* ── LOGISTICS GRID ── */
+.logistics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.logistics-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius); background: white;
+  transition: all 0.15s;
+}
+.logistics-item:hover { border-color: var(--blue); }
+.li-icon { font-size: 1.4rem; flex-shrink: 0; }
+.li-body { flex: 1; min-width: 0; }
+.li-name { font-weight: 600; font-size: 0.82rem; color: var(--slate-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.li-route { font-size: 0.72rem; color: var(--slate-500); margin-top: 1px; }
+.li-right { text-align: right; flex-shrink: 0; }
+.li-cargo { font-size: 0.78rem; font-weight: 700; color: var(--slate-800); }
+.li-eta { font-size: 0.7rem; color: var(--slate-500); margin-top: 2px; }
+.li-status { font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 99px; margin-top: 3px; display: inline-block; }
+.li-en-route { background: #d1fae5; color: #065f46; }
+.li-loading { background: #fef3c7; color: #92400e; }
+.li-arrived { background: #dbeafe; color: #1d4ed8; }
+
+/* ── FREIGHT LIST ── */
+.freight-list { display: flex; flex-direction: column; gap: 8px; }
+.freight-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px; background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+}
+.freight-route { flex: 1; }
+.freight-from { font-size: 0.78rem; font-weight: 700; color: var(--slate-900); }
+.freight-to { font-size: 0.72rem; color: var(--slate-500); }
+.freight-type { font-size: 0.72rem; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--slate-200); color: var(--slate-600); flex-shrink: 0; }
+.freight-cost { font-weight: 700; font-size: 0.875rem; color: var(--slate-900); text-align: right; flex-shrink: 0; }
+.freight-cost span { display: block; font-size: 0.7rem; color: var(--slate-500); font-weight: 400; }
+
+/* ── MINI MAP IN DASH ── */
+.dash-mini-map {
+  width: 100%;
+  height: 160px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #dbeafe 0%, #bfdbfe 50%, #eff6ff 100%);
+  position: relative; overflow: hidden;
+  border: 1px solid var(--slate-200);
+  cursor: pointer;
+}
+.dash-mini-map-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.01);
+}
+.dash-mini-map canvas { width: 100% !important; height: 100% !important; }
+.dash-mini-map-link {
+  position: absolute; bottom: 10px; right: 10px;
+  padding: 4px 12px; border-radius: 99px;
+  background: rgba(37,99,235,0.9); color: white;
+  font-size: 0.75rem; font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── AI confidence bar ── */
+.ai-confidence {
+  margin-top: 12px;
+}
+.ai-conf-label { font-size: 0.72rem; color: var(--slate-500); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.ai-conf-bar { width: 100%; height: 6px; background: var(--slate-200); border-radius: 99px; overflow: hidden; }
+.ai-conf-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green), #34d399); transition: width 1s ease; }
+
+/* ── Branch Switch button ── */
+.branch-switch-btn {
+  width: 100%;
+  padding: 10px; border-radius: 8px;
+  border: 1.5px dashed var(--slate-300);
+  background: white; cursor: pointer;
+  font-size: 0.825rem; font-weight: 600; color: var(--blue);
+  transition: all 0.2s; margin-top: 8px;
+}
+.branch-switch-btn:hover { border-color: var(--blue); background: var(--blue-pale); }
+
+/* AI history log */
+.ai-history { max-height: 120px; overflow-y: auto; margin-top: 8px; }
+.ai-history-item {
+  display: flex; gap: 8px; padding: 6px 0;
+  border-bottom: 1px solid var(--slate-100); font-size: 0.78rem;
+}
+.ai-history-time { color: var(--slate-400); flex-shrink: 0; font-variant-numeric: tabular-nums; width: 50px; }
+.ai-history-text { color: var(--slate-600); }

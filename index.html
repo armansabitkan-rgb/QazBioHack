@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QazaqBioHub — AI Navigator | Выход из сырьевой ловушки</title>
+  <meta name="description" content="QazaqBioHub — интеллектуальная система управления гибким зерноперерабатывающим заводом на базе ИИ. Принцип Агро-Хеджирования для Казахстана." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Three.js for 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GSAP for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════════════ -->
+<nav class="nav" id="mainNav">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2L26 8V20L14 26L2 20V8L14 2Z" stroke="#2563EB" stroke-width="2" fill="rgba(37,99,235,0.1)"/>
+          <path d="M14 7L20 10.5V17.5L14 21L8 17.5V10.5L14 7Z" fill="#2563EB" opacity="0.6"/>
+          <circle cx="14" cy="14" r="3" fill="#2563EB"/>
+        </svg>
+      </div>
+      <span class="nav-logo-text">QazaqBioHub</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Завод-трансформер</a>
+      <a href="dashboard.html" class="nav-link">ИИ-Навигатор</a>
+      <a href="worldmap.html" class="nav-link">Карта мира</a>
+    </div>
+    <a href="dashboard.html" class="nav-cta">
+      <span>Открыть диспетчер</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+     HERO SECTION
+═══════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span>Принцип Агро-Хеджирования · Live</span>
+    </div>
+    <h1 class="hero-title">
+      Завод-трансформер<br/>
+      <span class="hero-title-accent">QazaqBioHub</span>
+    </h1>
+    <p class="hero-desc">
+      ИИ-система реального времени, которая анализирует мировые цены, логистику
+      и спрос — и за <strong>48 часов</strong> переключает производство между
+      глютеном, крахмалом, аминокислотами и биоэтанолом.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="statMargin">+340%</span>
+        <span class="hero-stat-label">Маржинальность vs мука</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="statSwitch">48ч</span>
+        <span class="hero-stat-label">Переключение веток</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="statProducts">4</span>
+        <span class="hero-stat-label">Продуктовых вектора</span>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <a href="#factory3d" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1L17 5V13L9 17L1 13V5L9 1Z" stroke="currentColor" stroke-width="1.5"/></svg>
+        Смотреть 3D-завод
+      </a>
+      <a href="dashboard.html" class="btn btn-secondary">
+        Открыть ИИ-навигатор
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint">
+    <div class="scroll-arrow">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3V17M4 11L10 17L16 11" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span>Прокрутите вниз</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     3D FACTORY SECTION
+═══════════════════════════════════════════════ -->
+<section class="factory-section" id="factory3d">
+  <div class="factory-header">
+    <div class="section-badge">3D Интерактивная модель</div>
+    <h2 class="section-title">Архитектура завода-трансформера</h2>
+    <p class="section-desc">Нажмите на блоки для получения детальной информации. Вращайте модель мышью.</p>
+  </div>
+
+  <!-- Branch selector -->
+  <div class="branch-selector">
+    <button class="branch-btn active" data-branch="all" onclick="selectBranch('all')">
+      <span class="branch-btn-dot" style="background:#2563EB"></span>Все ветки
+    </button>
+    <button class="branch-btn" data-branch="A" onclick="selectBranch('A')">
+      <span class="branch-btn-dot" style="background:#10b981"></span>Ветка А — ГФС
+    </button>
+    <button class="branch-btn" data-branch="B" onclick="selectBranch('B')">
+      <span class="branch-btn-dot" style="background:#f59e0b"></span>Ветка Б — Биоэтанол
+    </button>
+    <button class="branch-btn" data-branch="C" onclick="selectBranch('C')">
+      <span class="branch-btn-dot" style="background:#8b5cf6"></span>Ветка В — Аминокислоты
+    </button>
+  </div>
+
+  <!-- 3D Canvas -->
+  <div class="factory-canvas-wrap" id="factory3dWrap">
+    <canvas id="factoryCanvas"></canvas>
+
+    <!-- Overlay info panel -->
+    <div class="factory-info-panel" id="factoryInfoPanel">
+      <div class="fip-header">
+        <div class="fip-icon" id="fipIcon">🏭</div>
+        <div>
+          <div class="fip-title" id="fipTitle">Базовый модуль</div>
+          <div class="fip-sub" id="fipSub">Крахмальный хаб</div>
+        </div>
+        <button class="fip-close" onclick="closeFactoryPanel()">×</button>
+      </div>
+      <div class="fip-body" id="fipBody">
+        <p>Нажмите на элемент завода для просмотра деталей.</p>
+      </div>
+    </div>
+
+    <!-- Active branch indicator -->
+    <div class="factory-active-indicator" id="factoryActiveInd">
+      <div class="fai-dot" id="faiDot"></div>
+      <span id="faiText">Все ветки активны</span>
+    </div>
+
+    <!-- Controls hint -->
+    <div class="factory-controls-hint">
+      <span>🖱 Drag to rotate · Scroll to zoom · Click blocks</span>
+    </div>
+  </div>
+
+  <!-- Branch Info Cards -->
+  <div class="branches-grid">
+    <!-- Trunk -->
+    <div class="branch-card branch-trunk" onclick="highlightBranch('trunk')">
+      <div class="bc-icon">⚙️</div>
+      <div class="bc-badge bc-badge-always">Всегда активно</div>
+      <h3 class="bc-title">Базовый ствол</h3>
+      <p class="bc-desc">Приём зерна → Помол → Разделение крахмала и белка (глютена)</p>
+      <div class="bc-metrics">
+        <div class="bc-metric"><span class="bc-metric-val">500т</span><span class="bc-metric-label">/сутки</span></div>
+        <div class="bc-metric"><span class="bc-metric-val">$180</span><span class="bc-metric-label">глютен/т</span></div>
+      </div>
+    </div>
+    <!-- Branch A -->
+    <div class="branch-card branch-a" onclick="highlightBranch('A')">
+      <div class="bc-icon">🍬</div>
+      <div class="bc-badge bc-badge-summer">Лето / Пищепром</div>
+      <h3 class="bc-title">Ветка А — ГФС</h3>
+      <p class="bc-desc">Гидролиз крахмала → Глюкозно-фруктозные сиропы для Coca-Cola, сокового рынка</p>
+      <div class="bc-metrics">
+        <div class="bc-metric"><span class="bc-metric-val">$650</span><span class="bc-metric-label">за тонну</span></div>
+        <div class="bc-metric"><span class="bc-metric-val">↑38%</span><span class="bc-metric-label">vs сахар</span></div>
+      </div>
+      <div class="bc-trigger">🟢 Сигнал: Цена сахара &gt; $480/т</div>
+    </div>
+    <!-- Branch B -->
+    <div class="branch-card branch-b" onclick="highlightBranch('B')">
+      <div class="bc-icon">⛽</div>
+      <div class="bc-badge bc-badge-winter">Зима / Энергетика</div>
+      <h3 class="bc-title">Ветка Б — Биоэтанол</h3>
+      <p class="bc-desc">Ферментация + дрожжи → Биоэтанол (E10/E85) для нефтяного рынка</p>
+      <div class="bc-metrics">
+        <div class="bc-metric"><span class="bc-metric-val">$720</span><span class="bc-metric-label">за тонну</span></div>
+        <div class="bc-metric"><span class="bc-metric-val">↑ Нефть</span><span class="bc-metric-label">коррел.</span></div>
+      </div>
+      <div class="bc-trigger">🟡 Сигнал: Нефть Brent &gt; $85</div>
+    </div>
+    <!-- Branch C -->
+    <div class="branch-card branch-c" onclick="highlightBranch('C')">
+      <div class="bc-icon">🧬</div>
+      <div class="bc-badge bc-badge-spring">Весна / Агро</div>
+      <h3 class="bc-title">Ветка В — Аминокислоты</h3>
+      <p class="bc-desc">Биосинтез бактериями → Лизин, Лимонная кислота для птицефабрик (премиум)</p>
+      <div class="bc-metrics">
+        <div class="bc-metric"><span class="bc-metric-val">$3 000</span><span class="bc-metric-label">за тонну</span></div>
+        <div class="bc-metric"><span class="bc-metric-val">×16</span><span class="bc-metric-label">vs мука</span></div>
+      </div>
+      <div class="bc-trigger">🟣 Сигнал: Спрос птицефабрик ↑</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     AI DECISION FLOW
+═══════════════════════════════════════════════ -->
+<section class="decision-section">
+  <div class="decision-header">
+    <div class="section-badge">ИИ-Алгоритм</div>
+    <h2 class="section-title">Как ИИ принимает решение</h2>
+  </div>
+  <div class="decision-flow">
+    <div class="df-step">
+      <div class="df-num">01</div>
+      <div class="df-icon">📡</div>
+      <h4>Сбор данных</h4>
+      <p>Мировые биржи, контракты, логистика в реальном времени</p>
+    </div>
+    <div class="df-arrow">→</div>
+    <div class="df-step">
+      <div class="df-num">02</div>
+      <div class="df-icon">🧮</div>
+      <h4>Расчёт маржи</h4>
+      <p>Цена продукта − себестоимость − логистика по каждой ветке</p>
+    </div>
+    <div class="df-arrow">→</div>
+    <div class="df-step">
+      <div class="df-num">03</div>
+      <div class="df-icon">🤖</div>
+      <h4>Рекомендация</h4>
+      <p>«Сейчас выгоднее: Ветка А → ГФС → Китай» с маржой +$240/т</p>
+    </div>
+    <div class="df-arrow">→</div>
+    <div class="df-step">
+      <div class="df-num">04</div>
+      <div class="df-icon">🔄</div>
+      <h4>Переключение</h4>
+      <p>Завод перестраивает реакторы за 48 часов. Прибыль защищена.</p>
+    </div>
+  </div>
+
+  <!-- Live AI recommendation box -->
+  <div class="ai-rec-box">
+    <div class="ai-rec-header">
+      <div class="ai-rec-pulse"></div>
+      <span class="ai-rec-label">ИИ-Навигатор · Рекомендация прямо сейчас</span>
+      <span class="ai-rec-time" id="aiRecTime"></span>
+    </div>
+    <div class="ai-rec-content">
+      <div class="ai-rec-main" id="aiRecMain">
+        Анализ рынков...
+      </div>
+      <div class="ai-rec-reasons" id="aiRecReasons"></div>
+    </div>
+    <a href="dashboard.html" class="ai-rec-link">
+      Открыть полный диспетчер →
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     ECONOMICS SECTION
+═══════════════════════════════════════════════ -->
+<section class="economics-section">
+  <div class="econ-header">
+    <div class="section-badge">Экономика</div>
+    <h2 class="section-title">Почему это меняет всё</h2>
+  </div>
+  <div class="econ-comparison">
+    <div class="econ-card econ-bad">
+      <div class="econ-bad-header">
+        <span class="econ-tag">❌ Классический завод</span>
+      </div>
+      <div class="econ-item">
+        <span>Продукт</span><strong>Мука (1 продукт)</strong>
+      </div>
+      <div class="econ-item">
+        <span>Цена</span><strong>$190–220/т</strong>
+      </div>
+      <div class="econ-item">
+        <span>Риск</span><strong>Цена упала — банкрот</strong>
+      </div>
+      <div class="econ-item">
+        <span>Гибкость</span><strong>Нет (0%)</strong>
+      </div>
+    </div>
+    <div class="econ-vs">VS</div>
+    <div class="econ-card econ-good">
+      <div class="econ-good-header">
+        <span class="econ-tag">✅ QazaqBioHub</span>
+      </div>
+      <div class="econ-item">
+        <span>Продуктов</span><strong>4 вектора</strong>
+      </div>
+      <div class="econ-item">
+        <span>Максимум</span><strong>$3 000/т (лизин)</strong>
+      </div>
+      <div class="econ-item">
+        <span>Риск</span><strong>Хеджирован на 3 рынка</strong>
+      </div>
+      <div class="econ-item">
+        <span>Переключение</span><strong>48 часов</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     CTA SECTION
+═══════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-content">
+    <h2 class="cta-title">Готовы войти в диспетчерскую?</h2>
+    <p class="cta-desc">Мониторинг мировых бирж, логистика, контракты и ИИ-рекомендации — в одном интерфейсе.</p>
+    <div class="cta-buttons">
+      <a href="dashboard.html" class="btn btn-primary btn-lg">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="2" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="2" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+        Открыть ИИ-диспетчер
+      </a>
+      <a href="worldmap.html" class="btn btn-secondary btn-lg">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M2 10H18M10 2C7.5 5 6 7.5 6 10C6 12.5 7.5 15 10 18M10 2C12.5 5 14 7.5 14 10C14 12.5 12.5 15 10 18" stroke="currentColor" stroke-width="1.5"/></svg>
+        Карта мировых маршрутов
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo">QazaqBioHub <span>© 2025</span></div>
+    <div class="footer-links">
+      <a href="index.html">Завод</a>
+      <a href="dashboard.html">ИИ-Навигатор</a>
+      <a href="worldmap.html">Карта мира</a>
+    </div>
+    <div class="footer-tag">Принцип Агро-Хеджирования · Казахстан</div>
+  </div>
+</footer>
+
+<script src="factory3d.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

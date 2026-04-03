@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Карта мира · Маршруты | QazaqBioHub</title>
+  <meta name="description" content="Интерактивная карта мировых поставок QazaqBioHub — суда, поезда, контракты в реальном времени." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* Map fills all space below nav */
+    #leafletMap { width: 100%; height: 100%; }
+    .worldmap-wrap { position: relative; height: calc(100vh - 64px); margin-top: 64px; overflow: hidden; background: #0a1628; }
+
+    /* Custom Leaflet popup */
+    .leaflet-popup-content-wrapper { background: rgba(15,23,42,0.96) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 12px !important; box-shadow: 0 12px 40px rgba(0,0,0,0.5) !important; }
+    .leaflet-popup-tip { background: rgba(15,23,42,0.96) !important; }
+    .leaflet-popup-content { font-family: 'Inter', sans-serif !important; font-size: 13px; margin: 14px 16px !important; line-height: 1.6; }
+    .leaflet-popup-content b { color: #93c5fd; }
+    .leaflet-container a.leaflet-popup-close-button { color: rgba(255,255,255,0.5) !important; font-size: 20px !important; }
+    .leaflet-container a.leaflet-popup-close-button:hover { color: #fff !important; }
+
+    /* Custom vessel marker */
+    .vessel-marker { display: flex; align-items: center; justify-content: center; font-size: 22px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); transition: transform 0.2s; cursor: pointer; }
+    .vessel-marker:hover { transform: scale(1.35); }
+    .port-marker { display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+    .source-marker { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #fbbf24; background: #f97316; box-shadow: 0 0 12px rgba(249,115,22,0.5); }
+
+    /* Route polyline pulse animation via Leaflet-compatible class */
+    @keyframes routePulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+    /* ── Overlay panels ── */
+    .wm-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 800; }
+    .wm-panel { pointer-events: all; }
+
+    /* Top status bar */
+    .wm-status-bar {
+      position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(15,23,42,0.88); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 6px 18px; z-index: 900;
+    }
+    .wm-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: pulse-dot 2s infinite; flex-shrink: 0; }
+    .wm-status-bar span { font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; }
+    .wm-status-sep { color: rgba(255,255,255,0.25); }
+
+    /* Left data panel */
+    .wm-left-panel {
+      position: absolute; top: 50px; left: 12px; width: 230px;
+      background: rgba(15,23,42,0.92); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+      padding: 14px 16px; z-index: 850; max-height: calc(100% - 110px); overflow-y: auto;
+    }
+
+    /* Right legend */
+    .wm-legend {
+      position: absolute; top: 50px; right: 12px; width: 200px;
+      background: rgba(15,23,42,0.92); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+      padding: 14px 16px; z-index: 850;
+    }
+
+    /* Bottom ticker */
+    .wm-ticker-bar {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 40px;
+      background: rgba(15,23,42,0.97); border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; z-index: 900; pointer-events: all;
+    }
+    .wm-ticker-label {
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em;
+      color: #f59e0b; text-transform: uppercase; padding: 0 14px;
+      border-right: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
+    }
+    .wm-ticker-scroll { flex: 1; overflow: hidden; height: 100%; display: flex; align-items: center; }
+    .wm-ticker-inner { display: flex; gap: 0; white-space: nowrap; animation: tickerScroll 50s linear infinite; }
+    .wm-ticker-item { display: flex; align-items: center; gap: 6px; padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.06); }
+    .wm-ticker-name { font-size: 0.72rem; font-weight: 700; color: #fff; }
+    .wm-ticker-val { font-size: 0.72rem; font-variant-numeric: tabular-nums; color: rgba(255,255,255,0.75); }
+    .wm-ticker-chg { font-size: 0.68rem; font-weight: 600; }
+    .wm-ticker-up { color: #22c55e; }
+    .wm-ticker-dn { color: #ef4444; }
+    @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+    /* Filter bar */
+    .wm-filter-bar {
+      position: absolute; top: 8px; right: 230px;
+      display: flex; align-items: center; gap: 6px; z-index: 900; pointer-events: all;
+    }
+    .wm-filter-btn {
+      padding: 5px 12px; border-radius: 99px;
+      background: rgba(30,41,59,0.9); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.65); font-size: 0.72rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .wm-filter-btn:hover, .wm-filter-btn.active { background: rgba(37,99,235,0.5); border-color: #3b82f6; color: #fff; }
+
+    /* Hide default Leaflet attribution for clean Bloomberg look */
+    .leaflet-control-attribution { display: none !important; }
+    .leaflet-control-zoom { border: none !important; }
+    .leaflet-control-zoom a { background: rgba(30,41,59,0.95) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.15) !important; border-radius: 6px !important; width: 32px !important; height: 32px !important; line-height: 32px !important; font-size: 16px !important; }
+    .leaflet-control-zoom a:hover { background: rgba(37,99,235,0.6) !important; }
+  </style>
+</head>
+<body class="worldmap-page">
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2L26 8V20L14 26L2 20V8L14 2Z" stroke="#3b82f6" stroke-width="2" fill="rgba(59,130,246,0.1)"/>
+          <circle cx="14" cy="14" r="3" fill="#3b82f6"/>
+        </svg>
+      </div>
+      <span class="nav-logo-text">QazaqBioHub</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Завод-трансформер</a>
+      <a href="dashboard.html" class="nav-link">ИИ-Навигатор</a>
+      <a href="worldmap.html" class="nav-link active">Карта мира</a>
+    </div>
+    <a href="dashboard.html" class="nav-cta">
+      <span>Диспетчер</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- WORLD MAP -->
+<div class="worldmap-wrap" id="worldmapWrap">
+  <div id="leafletMap"></div>
+
+  <div class="wm-overlay">
+    <!-- Status bar -->
+    <div class="wm-status-bar">
+      <div class="wm-status-dot"></div>
+      <span style="color:rgba(255,255,255,0.8)" id="wmDateTime"></span>
+      <span class="wm-status-sep">|</span>
+      <span style="color:#22c55e;font-weight:700">QazaqBioHub GLOBAL LOGISTICS</span>
+      <span class="wm-status-sep">|</span>
+      <span style="color:rgba(255,255,255,0.5)">247 источников</span>
+    </div>
+
+    <!-- Filters -->
+    <div class="wm-filter-bar" id="wmFilterBar">
+      <button class="wm-filter-btn active" data-filter="all" onclick="filterMap('all')">🌍 Все</button>
+      <button class="wm-filter-btn" data-filter="ships" onclick="filterMap('ships')">🚢 Суда</button>
+      <button class="wm-filter-btn" data-filter="trains" onclick="filterMap('trains')">🚂 Поезда</button>
+      <button class="wm-filter-btn" data-filter="routes" onclick="filterMap('routes')">📄 Маршруты</button>
+    </div>
+
+    <!-- Left panel -->
+    <div class="wm-panel wm-left-panel" id="wmLeftPanel">
+      <div class="wm-panel-title">📊 LIVE · РЫНОЧНЫЕ ДАННЫЕ</div>
+      <div class="wm-stat-row"><span class="wm-stat-label">Нефть Brent</span><span class="wm-stat-val green" id="wm-oil">$87.4</span></div>
+      <div class="wm-stat-row"><span class="wm-stat-label">Сахар ICE #11</span><span class="wm-stat-val amber" id="wm-sugar">$491/т</span></div>
+      <div class="wm-stat-row"><span class="wm-stat-label">Пшеница CME</span><span class="wm-stat-val blue" id="wm-wheat">$196/т</span></div>
+      <div class="wm-stat-row"><span class="wm-stat-label">L-Лизин HCl</span><span class="wm-stat-val green" id="wm-lysin">$2,980/т</span></div>
+      <div class="wm-stat-row"><span class="wm-stat-label">ГФС-55</span><span class="wm-stat-val blue" id="wm-gfs">$648/т</span></div>
+      <div class="wm-stat-row"><span class="wm-stat-label">Биоэтанол</span><span class="wm-stat-val" id="wm-eth">$724/т</span></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08);margin:10px 0;padding-top:10px">
+        <div class="wm-panel-title">🚢 ФЛОТ</div>
+        <div class="wm-stat-row"><span class="wm-stat-label">Судов в море</span><span class="wm-stat-val green">12</span></div>
+        <div class="wm-stat-row"><span class="wm-stat-label">Поездов</span><span class="wm-stat-val green">8</span></div>
+        <div class="wm-stat-row"><span class="wm-stat-label">Контрактов</span><span class="wm-stat-val amber">6</span></div>
+        <div class="wm-stat-row"><span class="wm-stat-label">Груза в пути</span><span class="wm-stat-val green">14 200 т</span></div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08);margin:10px 0;padding-top:10px">
+        <div class="wm-panel-title">⚡ ИИ-НАВИГАТОР</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.7);line-height:1.5">
+          Рекомендуется:<br/>
+          <span style="color:#22c55e;font-weight:700">Ветка А → ГФС → Тяньцзинь</span><br/>
+          Маржа: +$240/т
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="wm-panel wm-legend" id="wmLegend">
+      <div class="wm-panel-title">ЛЕГЕНДА</div>
+      <div class="wm-legend-item"><span style="font-size:18px">🚢</span><span class="wm-legend-text">Танкер / Балкер</span></div>
+      <div class="wm-legend-item"><span style="font-size:18px">🚂</span><span class="wm-legend-text">Ж/д состав</span></div>
+      <div class="wm-legend-item"><span style="font-size:18px">✈️</span><span class="wm-legend-text">Авиагруз</span></div>
+      <div class="wm-legend-item"><div class="wm-legend-dot" style="background:#22c55e"></div><span class="wm-legend-text">ГФС / Крахмал</span></div>
+      <div class="wm-legend-item"><div class="wm-legend-dot" style="background:#fbbf24"></div><span class="wm-legend-text">Биоэтанол</span></div>
+      <div class="wm-legend-item"><div class="wm-legend-dot" style="background:#a78bfa"></div><span class="wm-legend-text">Аминокислоты</span></div>
+      <div class="wm-legend-item"><div class="wm-legend-dot" style="background:#f87171"></div><span class="wm-legend-text">Зерно / Глютен</span></div>
+      <div class="wm-legend-item"><div class="wm-legend-dot" style="background:#60a5fa"></div><span class="wm-legend-text">Порт назначения</span></div>
+      <div class="wm-legend-item"><div class="wm-legend-dot" style="background:#f97316"></div><span class="wm-legend-text">QazaqBioHub (КЗ)</span></div>
+    </div>
+
+    <!-- Ticker -->
+    <div class="wm-ticker-bar">
+      <div class="wm-ticker-label">БИРЖИ</div>
+      <div class="wm-ticker-scroll"><div class="wm-ticker-inner" id="wmTickerInner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="worldmap.js"></script>
+</body>
+</html>
